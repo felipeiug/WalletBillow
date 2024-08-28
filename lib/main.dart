@@ -26,9 +26,7 @@ class MyApp extends StatelessWidget {
       future: Config.init(context),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const MaterialApp(
-            title: 'WB',
-          );
+          return const MaterialApp(title: 'WB');
         }
 
         return AdaptiveTheme(

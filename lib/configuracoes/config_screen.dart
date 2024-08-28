@@ -33,32 +33,9 @@ class _ConfigScreenState extends State<ConfigScreen> {
     return position;
   }
 
-  void requestPro({bool request = false}) {
-    Timer.periodic(
-      const Duration(seconds: 1),
-      (timer) async {
-        if (mounted) {
-          timer.cancel();
-          if (!Config.isPro || request) {
-            DateTime lastRequestPro = Config.lastRequestPro;
-            Duration tempoPassado = DateTime.now().difference(lastRequestPro);
-            if (tempoPassado.inMinutes > 5 || request) {
-              bool serPro = await Widgets.solicitarPro(context) ?? false;
-              if (serPro) {
-                Config.isPro = true;
-              }
-              Config.lastRequestPro = DateTime.now();
-            }
-          }
-        }
-      },
-    );
-  }
-
   @override
   void initState() {
     super.initState();
-    requestPro();
   }
 
   @override

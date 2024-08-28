@@ -429,42 +429,6 @@ class _HomeState extends State<Home> {
     ).then((value) => setState(() {}));
   }
 
-  void requestPro({bool request = false}) {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (timeStamp) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return const AlertDialog(
-              title: Text("Versão BETA"),
-              content: Text("WB pró em breve!"),
-            );
-          },
-        );
-      },
-    );
-
-    // Timer.periodic(
-    //   const Duration(seconds: 1),
-    //   (timer) async {
-    //     if (mounted) {
-    //       timer.cancel();
-    //       if (!Config.isPro || request) {
-    //         DateTime lastRequestPro = Config.lastRequestPro;
-    //         Duration tempoPassado = DateTime.now().difference(lastRequestPro);
-    //         if (tempoPassado.inMinutes > 5 || request) {
-    //           bool serPro = await Widgets.solicitarPro(context) ?? false;
-    //           if (serPro) {
-    //             Config.isPro = true;
-    //           }
-    //           Config.lastRequestPro = DateTime.now();
-    //         }
-    //       }
-    //     }
-    //   },
-    // );
-  }
-
   Widget get grafico {
     //0 - Receitas
     //1 - Gastos
@@ -632,16 +596,6 @@ class _HomeState extends State<Home> {
       //Divisor
       const Divider(),
 
-      //Icone comprar
-      ListTile(
-        onTap: () {
-          requestPro(request: true);
-        },
-        //iconColor: Cores.escuro,
-        leading: const Icon(Icons.paid_rounded),
-        title: const Text("WB pro"),
-      ),
-
       //Icone sair
       ListTile(
         onTap: () {
@@ -668,20 +622,6 @@ class _HomeState extends State<Home> {
     config = HomeConfig();
     config.getPayments();
     Future.delayed(Durations.long2).then((value) => setState(() {}));
-
-    // Processo de avaliar o app
-    // if (DateTime.now().difference(Config.lastAvaliarOApp).inDays > 7) {
-    //   WidgetsBinding.instance.addPostFrameCallback(
-    //     (timeStamp) async {
-    //       bool avaliou = await avaliarAppPopUp(context);
-    //       print(avaliou);
-    //       // Config.avaliouOApp = avaliou;
-    //       // Config.lastAvaliarOApp = DateTime.now();
-    //     },
-    //   );
-    // }
-
-    requestPro();
   }
 
   @override
