@@ -305,7 +305,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
                             title: "Deseja mesmo apagar todas as suas despesas?",
                             subtitle: "Isto irá apagar todas as suas despesas! Esta ação não é reversível!",
                           )) {
-                            Config.gastos = [];
+                            Config.gastos.gastos = [];
                           }
                         },
                         icon: const Icon(

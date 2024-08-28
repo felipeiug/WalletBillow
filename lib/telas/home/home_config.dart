@@ -17,7 +17,7 @@ class HomeConfig {
 
   // Lista de pagamentos
   Future getPayments() async {
-    List<Despesa> gastos = Config.gastos;
+    List<Despesa> gastos = Config.gastos.gastos;
     List<Despesa> newGastos = [];
 
     for (Despesa gasto in gastos) {
@@ -138,7 +138,7 @@ class HomeConfig {
         valor: valor,
       );
 
-      Config.addGasto(despesa);
+      Config.gastos.addGasto(despesa);
     } else if (parcelasTotal != 0 || fixo) {
       String id = Despesa(nome: "", data: DateTime.now(), valor: 0).id;
 
@@ -163,7 +163,7 @@ class HomeConfig {
           );
         },
       );
-      Config.addListGastos(despesas);
+      Config.gastos.addListGastos(despesas);
     }
     await getPayments();
   }
@@ -175,10 +175,10 @@ class HomeConfig {
     bool removeAll = false,
   }) async {
     if (!removeAll) {
-      Config.removeGasto(id, parcela);
+      Config.gastos.removeGasto(id, parcela);
     } else {
-      List<Despesa> despesasRemover = Config.gastos.where((e) => (e.id == id && e.parcelaAtual >= parcela)).toList();
-      Config.removeListGastos(
+      List<Despesa> despesasRemover = Config.gastos.gastos.where((e) => (e.id == id && e.parcelaAtual >= parcela)).toList();
+      Config.gastos.removeListGastos(
         despesasRemover.map((e) => e.id).toList(),
         despesasRemover.map((e) => e.parcelaAtual).toList(),
       );
@@ -200,17 +200,17 @@ class HomeConfig {
     bool editAll = true,
   }) async {
     if (!editAll) {
-      Config.editGasto(id, parcela, pago: pago, nome: descricao, data: data, valor: valor, fixo: fixo);
+      Config.gastos.editGasto(id, parcela, pago: pago, nome: descricao, data: data, valor: valor, fixo: fixo);
     } else {
       //Obtendo as despesas no intervalo
-      List<Despesa> despesasMudar = Config.gastos.where((e) => (e.id == id)).toList();
+      List<Despesa> despesasMudar = Config.gastos.gastos.where((e) => (e.id == id)).toList();
       if (despesasMudar.isEmpty) {
         return;
       }
       despesasMudar.sort((a, b) => a.parcelaAtual.compareTo(b.parcelaAtual));
 
       // Removendo as despesas no intervalo para aplicar as modifcações
-      Config.removeListGastos(
+      Config.gastos.removeListGastos(
         despesasMudar.map((e) => e.id).toList(),
         despesasMudar.map((e) => e.parcelaAtual).toList(),
       );
@@ -306,7 +306,7 @@ class HomeConfig {
         }
       }
 
-      Config.addListGastos(despesasMudarTemp);
+      Config.gastos.addListGastos(despesasMudarTemp);
     }
     await getPayments();
   }
