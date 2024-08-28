@@ -26,15 +26,6 @@ class Config {
     Config.prefs!.setBool("pro", false);
   }
 
-  //Last torne-se pro, retorna a ultima vez que foi questionado em se tornar pró.
-  static DateTime get lastRequestPro {
-    return DateTime.fromMillisecondsSinceEpoch(Config.prefs!.getInt("lastRequestPro") ?? 0);
-  }
-
-  static set lastRequestPro(DateTime value) {
-    Config.prefs!.setInt("lastRequestPro", value.millisecondsSinceEpoch);
-  }
-
   //Dia do pagamento para virada do mês
   static int get diaPagamento {
     return Config.prefs!.getInt("diaPagamento") ?? 5;

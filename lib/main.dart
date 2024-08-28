@@ -58,17 +58,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-class ThemeProvider extends ChangeNotifier {
-  ThemeData? currentTheme;
-
-  setLightMode() {
-    currentTheme = Cores.themaLight;
-    notifyListeners();
-  }
-
-  setDarkmode() {
-    currentTheme = Cores.themaDark;
-    notifyListeners();
-  }
-}
