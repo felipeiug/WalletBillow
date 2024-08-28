@@ -7,7 +7,7 @@ import 'package:walletbillow/configuracoes/config_screen.dart';
 import 'package:walletbillow/paleta/cores.dart';
 import 'package:walletbillow/telas/home/home.dart';
 
-String versaoDoApp = "0.0.1";
+String versaoDoApp = "0.1.0";
 
 void main() {
   runApp(const MyApp());
