@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 
-class Despesa {
-  Despesa({
+class Lancamento {
+  Lancamento({
     String? id,
     required this.nome,
     required this.data,
@@ -16,8 +16,8 @@ class Despesa {
   })  : id = id ?? _getHashString,
         assert(!(fixo && parcelasTotal != 0));
 
-  factory Despesa.fromMap(Map dados) {
-    return Despesa(
+  factory Lancamento.fromMap(Map dados) {
+    return Lancamento(
       id: dados["id"].toString(),
       nome: dados["nome"] ?? "",
       data: DateTime.fromMillisecondsSinceEpoch(dados["data"] ?? DateTime.now().millisecondsSinceEpoch),
@@ -58,8 +58,8 @@ class Despesa {
     return hashString;
   }
 
-  Despesa copy() {
-    return Despesa(
+  Lancamento copy() {
+    return Lancamento(
       nome: nome,
       data: data,
       valor: valor,
@@ -69,9 +69,6 @@ class Despesa {
       fixo: fixo,
     );
   }
-
-  static const int despesa = -1;
-  static const int receita = 1;
 
   final String id;
   String nome;
@@ -83,7 +80,7 @@ class Despesa {
   int parcelaAtual;
 
   @override
-  String toString() => "Despesa(id: $id, parcela: $parcelaAtual/$parcelasTotal, fixo: $fixo, valor: $valor)";
+  String toString() => "${valor > 0 ? 'Receita' : 'Despesa'}(id: $id, parcela: $parcelaAtual/$parcelasTotal, fixo: $fixo, valor: $valor)";
 
   bool inDateTimeRange(DateTimeRange dateRange) {
     if (data.compareTo(dateRange.start) >= 0 && data.compareTo(dateRange.end) <= 0) {

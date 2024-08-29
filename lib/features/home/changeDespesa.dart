@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:walletbillow/despesa/obj_despesa.dart';
-import 'package:walletbillow/paleta/widgets.dart';
-import 'package:walletbillow/telas/home/home_config.dart';
+import 'package:walletbillow/core/models/lancamentos/lancamento.dart';
+import 'package:walletbillow/shared/themes/widgets.dart';
+import 'package:walletbillow/core/utils/home_config.dart';
 
 void changeDispesa(
   BuildContext context,
-  HomeConfig config, {
-  Despesa? despesa,
+  HomeUtil config, {
+  Lancamento? despesa,
   Function? onValue,
 }) async {
   showDialog(
@@ -31,7 +31,7 @@ void changeDispesa(
       DateTime data = despesa?.data ?? DateTime.now();
 
       return AlertDialog(
-        title: Text(modificando ? "Alterar Despesa" : "Nova Despesa"),
+        title: Text(modificando ? "Alterar Lancamento" : "Novo Lancamento"),
         content: StatefulBuilder(
           builder: (context, setState) {
             return SingleChildScrollView(
@@ -79,11 +79,11 @@ void changeDispesa(
                                 scale: 0.8,
                                 child: IconButton(
                                     icon: Icon(
-                                      tipoDespesa == Despesa.despesa ? Icons.remove : Icons.add,
+                                      tipoDespesa == -1 ? Icons.remove : Icons.add,
                                     ),
                                     onPressed: () {
                                       setState(() {
-                                        tipoDespesa = tipoDespesa == Despesa.despesa ? Despesa.receita : Despesa.despesa;
+                                        tipoDespesa = tipoDespesa == -1 ? 1 : -1;
                                       });
                                     }),
                               ),
@@ -116,11 +116,11 @@ void changeDispesa(
                         // Caso seja negativo
                         if (minus) {
                           setState(() {
-                            tipoDespesa = Despesa.despesa;
+                            tipoDespesa = -1;
                           });
                         } else if (plus) {
                           setState(() {
-                            tipoDespesa = Despesa.receita;
+                            tipoDespesa = 1;
                           });
                         }
 
@@ -133,7 +133,7 @@ void changeDispesa(
                   // Pagamento fixo
                   Row(
                     children: [
-                      Text("${tipoDespesa == Despesa.despesa ? "Despesa" : "Receita"} Fixa:"),
+                      Text("${tipoDespesa == -1 ? "Despesa" : "Receita"} Fixa:"),
                       const Spacer(),
                       Checkbox(
                         value: fixo,
@@ -257,7 +257,7 @@ void changeDispesa(
                   return;
                 } else {
                   valor = double.tryParse(controllerValor.text.replaceAll(",", ".")) ?? 0;
-                  if (tipoDespesa == Despesa.despesa) {
+                  if (tipoDespesa == -1) {
                     valor *= -1;
                   }
                 }
@@ -329,7 +329,7 @@ void changeDispesa(
                   return;
                 } else {
                   valor = double.tryParse(controllerValor.text.replaceAll(",", ".")) ?? 0;
-                  if (tipoDespesa == Despesa.despesa) {
+                  if (tipoDespesa == -1) {
                     valor *= -1;
                   }
                 }
@@ -381,7 +381,7 @@ void changeDispesa(
                   Navigator.of(context).pop();
                 });
               },
-              child: Text(despesa.parcelasTotal > 0 || despesa.fixo ? "Alterar somente este mês" : "Alterar Despesa"),
+              child: Text(despesa.parcelasTotal > 0 || despesa.fixo ? "Alterar somente este mês" : "Alterar Lancamento"),
             ),
         ],
       );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:walletbillow/avaliarApp/avaliar_app_config.dart';
+import 'package:walletbillow/features/avaliarApp/avaliar_app_config.dart';
 
 Future<bool> avaliarAppPopUp(BuildContext context) async {
   AvaliarAppConfig configuracoes = AvaliarAppConfig();

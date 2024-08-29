@@ -2,10 +2,10 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:month_year_picker/month_year_picker.dart';
-import 'package:walletbillow/configuracoes/config_data.dart';
-import 'package:walletbillow/configuracoes/config_screen.dart';
-import 'package:walletbillow/paleta/cores.dart';
-import 'package:walletbillow/telas/home/home.dart';
+import 'package:walletbillow/core/services/config_data.dart';
+import 'package:walletbillow/features/config/config_screen.dart';
+import 'package:walletbillow/shared/themes/cores.dart';
+import 'package:walletbillow/features/home/home.dart';
 
 String versaoDoApp = "0.1.0";
 

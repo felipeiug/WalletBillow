@@ -1,7 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:walletbillow/gastos/gastos.dart';
 
 class Config {
   static SharedPreferences? prefs;
@@ -58,9 +57,6 @@ class Config {
   static set lastAvaliarOApp(DateTime value) {
     Config.prefs!.setInt("lastAvaliarOApp", value.millisecondsSinceEpoch);
   }
-
-  //Gastos ////////////////////////////////////////////
-  static Gastos gastos = Gastos();
 
   //Dados do APP ///////////////////
   //Thema

@@ -2,25 +2,27 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:walletbillow/configuracoes/config_data.dart';
-import 'package:walletbillow/despesa/obj_despesa.dart';
+import 'package:walletbillow/core/services/config_data.dart';
+import 'package:walletbillow/core/models/lancamentos/lancamento.dart';
+import 'package:walletbillow/core/services/gastos/gastosDB.dart';
 
-class HomeConfig {
-  HomeConfig();
+class HomeUtil {
+  Gastos gastosDB;
+  HomeUtil(this.gastosDB);
 
   DateTime _data = DateTime(
     DateTime.now().year,
     DateTime.now().month,
     DateTime.now().day,
   );
-  List<Despesa> despesas = [];
+  List<Lancamento> despesas = [];
 
   // Lista de pagamentos
   Future getPayments() async {
-    List<Despesa> gastos = Config.gastos.gastos;
-    List<Despesa> newGastos = [];
+    List<Lancamento> gastos = gastosDB.gastos;
+    List<Lancamento> newGastos = [];
 
-    for (Despesa gasto in gastos) {
+    for (Lancamento gasto in gastos) {
       if (gasto.inDateTimeRange(dateTimeRange)) {
         newGastos.add(gasto);
       }
@@ -60,7 +62,7 @@ class HomeConfig {
 
   double get receitaTotal {
     double val = 0;
-    for (Despesa despesa in receitas) {
+    for (Lancamento despesa in receitas) {
       val += despesa.valor;
     }
     return val;
@@ -68,17 +70,17 @@ class HomeConfig {
 
   double get gastoTotal {
     double val = 0;
-    for (Despesa despesa in gastos) {
+    for (Lancamento despesa in gastos) {
       val += despesa.valor;
     }
     return val;
   }
 
   //Obter os gastos e receitas
-  List<Despesa> get gastos {
-    List<Despesa> despesasNow = [];
+  List<Lancamento> get gastos {
+    List<Lancamento> despesasNow = [];
 
-    for (Despesa despesa in despesas) {
+    for (Lancamento despesa in despesas) {
       if (despesa.valor >= 0) {
         continue;
       }
@@ -90,10 +92,10 @@ class HomeConfig {
     return despesasNow;
   }
 
-  List<Despesa> get receitas {
-    List<Despesa> despesasNow = [];
+  List<Lancamento> get receitas {
+    List<Lancamento> despesasNow = [];
 
-    for (Despesa despesa in despesas) {
+    for (Lancamento despesa in despesas) {
       if (despesa.valor < 0) {
         continue;
       }
@@ -132,27 +134,27 @@ class HomeConfig {
     bool fixo = false,
   }) async {
     if (parcelasTotal == 0 && !fixo) {
-      Despesa despesa = Despesa(
+      Lancamento despesa = Lancamento(
         nome: nome,
         data: data,
         valor: valor,
       );
 
-      Config.gastos.addGasto(despesa);
+      gastosDB.addGasto(despesa);
     } else if (parcelasTotal != 0 || fixo) {
-      String id = Despesa(nome: "", data: DateTime.now(), valor: 0).id;
+      String id = Lancamento(nome: "", data: DateTime.now(), valor: 0).id;
 
       int qtdParcelas = parcelasTotal;
       if (qtdParcelas == 0) {
         qtdParcelas = 1200;
       }
 
-      List<Despesa> despesas = List.generate(
+      List<Lancamento> despesas = List.generate(
         qtdParcelas,
         (parcela) {
           int dia = min(data.day, DateTime(data.year, data.month + parcela + 1, 0).day);
           DateTime dataNow = DateTime(data.year, data.month + parcela, dia);
-          return Despesa(
+          return Lancamento(
             id: id,
             nome: nome,
             data: dataNow,
@@ -163,22 +165,22 @@ class HomeConfig {
           );
         },
       );
-      Config.gastos.addListGastos(despesas);
+      gastosDB.addListGastos(despesas);
     }
     await getPayments();
   }
 
-  // Adicionar uma despesa
+  // Remover uma despesa
   Future removeDespesa({
     required String id,
     required int parcela,
     bool removeAll = false,
   }) async {
     if (!removeAll) {
-      Config.gastos.removeGasto(id, parcela);
+      gastosDB.removeGasto(id, parcela);
     } else {
-      List<Despesa> despesasRemover = Config.gastos.gastos.where((e) => (e.id == id && e.parcelaAtual >= parcela)).toList();
-      Config.gastos.removeListGastos(
+      List<Lancamento> despesasRemover = gastosDB.gastos.where((e) => (e.id == id && e.parcelaAtual >= parcela)).toList();
+      gastosDB.removeListGastos(
         despesasRemover.map((e) => e.id).toList(),
         despesasRemover.map((e) => e.parcelaAtual).toList(),
       );
@@ -187,7 +189,7 @@ class HomeConfig {
     await getPayments();
   }
 
-  // Adicionar uma despesa
+  // Editar uma despesa
   Future editDespesa({
     required String id,
     required int parcela,
@@ -200,17 +202,25 @@ class HomeConfig {
     bool editAll = true,
   }) async {
     if (!editAll) {
-      Config.gastos.editGasto(id, parcela, pago: pago, nome: descricao, data: data, valor: valor, fixo: fixo);
+      gastosDB.editGasto(
+        id,
+        parcela,
+        pago: pago,
+        nome: descricao,
+        data: data,
+        valor: valor,
+        fixo: fixo,
+      );
     } else {
       //Obtendo as despesas no intervalo
-      List<Despesa> despesasMudar = Config.gastos.gastos.where((e) => (e.id == id)).toList();
+      List<Lancamento> despesasMudar = gastosDB.gastos.where((e) => (e.id == id)).toList();
       if (despesasMudar.isEmpty) {
         return;
       }
       despesasMudar.sort((a, b) => a.parcelaAtual.compareTo(b.parcelaAtual));
 
       // Removendo as despesas no intervalo para aplicar as modifcações
-      Config.gastos.removeListGastos(
+      gastosDB.removeListGastos(
         despesasMudar.map((e) => e.id).toList(),
         despesasMudar.map((e) => e.parcelaAtual).toList(),
       );
@@ -219,13 +229,13 @@ class HomeConfig {
         parcelasTotal = 1200;
       }
 
-      List<Despesa> despesasMudarTemp = [];
+      List<Lancamento> despesasMudarTemp = [];
       DateTime dataInicial = despesasMudar.first.data;
       int subtrairParcela = 0;
 
       // Caso o primeiro seja fixo
       if (!fixo && despesasMudar.first.fixo) {
-        String newId = Despesa(nome: "", data: dataInicial, valor: 0).id;
+        String newId = Lancamento(nome: "", data: dataInicial, valor: 0).id;
 
         for (int parcelaAtual = 1; parcelaAtual < parcela; parcelaAtual++) {
           //Data Antiga
@@ -234,7 +244,7 @@ class HomeConfig {
 
           // Adicionando a despesa antiga com o novo id
           if (despesasMudar.isNotEmpty && despesasMudar.first.data.compareTo(dataAntiga) == 0) {
-            despesasMudarTemp.add(Despesa(
+            despesasMudarTemp.add(Lancamento(
               id: newId,
               nome: despesasMudar.first.nome,
               data: despesasMudar.first.data,
@@ -263,7 +273,7 @@ class HomeConfig {
         dia = min(data.day, DateTime(dataInicial.year, dataInicial.month + parcelaAtual, 0).day);
         DateTime dataNova = DateTime(dataInicial.year, dataInicial.month + parcelaAtual - 1, dia);
 
-        Despesa? despesaAdd;
+        Lancamento? despesaAdd;
         if (despesasMudar.isNotEmpty && despesasMudar.first.data.compareTo(dataAntiga) == 0) {
           // Caso esteja nas parcelas para atualizar
           if (parcelaAtual >= (parcela - subtrairParcela)) {
@@ -277,7 +287,7 @@ class HomeConfig {
             despesasMudar.first.parcelaAtual -= subtrairParcela;
           }
           despesasMudar.first.parcelasTotal = fixo ? 0 : parcelasTotal;
-          despesaAdd = Despesa(
+          despesaAdd = Lancamento(
             id: id,
             nome: despesasMudar.first.nome,
             data: despesasMudar.first.data,
@@ -290,7 +300,7 @@ class HomeConfig {
 
           despesasMudar.removeAt(0);
         } else if (despesasMudar.isEmpty) {
-          despesaAdd = Despesa(
+          despesaAdd = Lancamento(
             id: id,
             nome: descricao,
             data: dataNova,
@@ -306,7 +316,7 @@ class HomeConfig {
         }
       }
 
-      Config.gastos.addListGastos(despesasMudarTemp);
+      gastosDB.addListGastos(despesasMudarTemp);
     }
     await getPayments();
   }
@@ -333,7 +343,7 @@ class HomeConfig {
         break;
       }
 
-      for (Despesa despesa in despesas) {
+      for (Lancamento despesa in despesas) {
         if (despesa.data.compareTo(dataAtual) == 0) {
           if (despesa.valor < 0) {
             valGasto += despesa.valor;

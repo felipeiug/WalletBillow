@@ -2,9 +2,8 @@ import 'dart:async';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:walletbillow/configuracoes/config_data.dart';
-import 'package:walletbillow/paleta/cores.dart';
-import 'package:walletbillow/paleta/widgets.dart';
+import 'package:walletbillow/core/services/config_data.dart';
+import 'package:walletbillow/shared/themes/cores.dart';
 
 class ConfigScreen extends StatefulWidget {
   const ConfigScreen({
@@ -286,36 +285,36 @@ class _ConfigScreenState extends State<ConfigScreen> {
               ),
 
               //Variáveis de controle
-              const Divider(),
+              // const Divider(),
 
-              //Apagar todas as despesas
-              Card(
-                child: ListTile(
-                  title: Row(
-                    children: [
-                      const Expanded(
-                        child: Text(
-                          "Excluir todas as despesas",
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          if (await Widgets.confimation(
-                            context,
-                            title: "Deseja mesmo apagar todas as suas despesas?",
-                            subtitle: "Isto irá apagar todas as suas despesas! Esta ação não é reversível!",
-                          )) {
-                            Config.gastos.gastos = [];
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.delete_forever,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              //TODO: Implementar a forma de apagar todas as despesas
+              // Card(
+              //   child: ListTile(
+              //     title: Row(
+              //       children: [
+              //         const Expanded(
+              //           child: Text(
+              //             "Excluir todas as despesas",
+              //           ),
+              //         ),
+              //         IconButton(
+              //           onPressed: () async {
+              //             if (await Widgets.confimation(
+              //               context,
+              //               title: "Deseja mesmo apagar todas as suas despesas?",
+              //               subtitle: "Isto irá apagar todas as suas despesas! Esta ação não é reversível!",
+              //             )) {
+              //               Config.gastos.gastos = [];
+              //             }
+              //           },
+              //           icon: const Icon(
+              //             Icons.delete_forever,
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
 
               //Espaçador
               const SizedBox(height: 15),
