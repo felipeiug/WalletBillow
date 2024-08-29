@@ -4,7 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:walletbillow/core/services/config_data.dart';
 import 'package:walletbillow/core/models/lancamentos/lancamento.dart';
-import 'package:walletbillow/core/services/gastos/gastosDB.dart';
+import 'package:walletbillow/core/services/gastos/gastos_db.dart';
 
 class HomeUtil {
   Gastos gastosDB;

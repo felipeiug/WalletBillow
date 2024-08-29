@@ -9,13 +9,13 @@ import 'package:month_year_picker/month_year_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletbillow/core/services/config_data.dart';
 import 'package:walletbillow/core/models/lancamentos/lancamento.dart';
-import 'package:walletbillow/core/services/gastos/gastosDB.dart';
-import 'package:walletbillow/shared/widgets/linearChart.dart';
+import 'package:walletbillow/core/services/gastos/gastos_db.dart';
+import 'package:walletbillow/shared/widgets/linear_chart.dart';
 import 'package:walletbillow/main.dart';
 import 'package:walletbillow/shared/themes/cores.dart';
 import 'package:intl/intl.dart';
 import 'package:walletbillow/shared/themes/widgets.dart';
-import 'package:walletbillow/features/home/changeDespesa.dart';
+import 'package:walletbillow/features/home/change_despesa.dart';
 import 'package:walletbillow/core/utils/home_config.dart';
 
 class Home extends StatefulWidget {
