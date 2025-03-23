@@ -44,6 +44,13 @@ dependencies:
   #Fontes do google
   google_fonts: ^6.2.1
 
+  # Cartão de Crédito
+  u_credit_card: ^1.4.0
+  credit_card_type_detector: ^3.0.0
+
+  # Botton Navigate
+  google_nav_bar: ^5.0.7
+
   #Gráficos
   fl_chart: ^0.70.2
 

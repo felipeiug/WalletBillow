@@ -2,13 +2,16 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:walletbillow/core/models/credit_card/credit_card.dart';
 import 'package:walletbillow/core/services/config_data.dart';
 import 'package:walletbillow/core/models/lancamentos/lancamento.dart';
+import 'package:walletbillow/core/services/credit_card.dart';
 import 'package:walletbillow/core/services/gastos/gastos_db.dart';
 
 class HomeUtil {
   Gastos gastosDB;
-  HomeUtil(this.gastosDB);
+  CreditCardDB creditCardDB;
+  HomeUtil(this.gastosDB, this.creditCardDB);
 
   DateTime _data = DateTime(
     DateTime.now().year,
@@ -23,9 +26,12 @@ class HomeUtil {
     List<Lancamento> newGastos = [];
 
     for (Lancamento gasto in gastos) {
-      if (gasto.inDateTimeRange(dateTimeRange)) {
+      CreditCard? cartao = creditCardDB.getCard(gasto.cartao ?? "");
+      if (cartao != null && cartao.despesaInMonth(gasto, dateTimeRange)) {
         newGastos.add(gasto);
+        continue;
       }
+      if (gasto.inDateTimeRange(dateTimeRange)) newGastos.add(gasto);
     }
 
     newGastos.sort((a, b) => (a.data).compareTo(b.data));
@@ -55,6 +61,11 @@ class HomeUtil {
     await getPayments();
   }
 
+  // Cartões
+  // List<CreditCard> get cartoes {
+  //   gastosDB.addGasto(despesa);
+  // }
+
   // Receita e despesa total
   double get receitaDespesa {
     return receitaTotal + gastoTotal;
@@ -81,14 +92,11 @@ class HomeUtil {
     List<Lancamento> despesasNow = [];
 
     for (Lancamento despesa in despesas) {
-      if (despesa.valor >= 0) {
-        continue;
-      }
+      if (despesa.valor >= 0 || despesa.cartao != null) continue;
       despesasNow.add(despesa);
     }
 
     despesasNow.sort((a, b) => a.data.compareTo(b.data));
-
     return despesasNow;
   }
 
@@ -96,9 +104,7 @@ class HomeUtil {
     List<Lancamento> despesasNow = [];
 
     for (Lancamento despesa in despesas) {
-      if (despesa.valor < 0) {
-        continue;
-      }
+      if (despesa.valor < 0) continue;
       despesasNow.add(despesa);
     }
 

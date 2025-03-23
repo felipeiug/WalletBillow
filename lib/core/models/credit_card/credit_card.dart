@@ -1,4 +1,12 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:crypto/crypto.dart';
+import 'package:flutter/material.dart';
+import 'package:walletbillow/core/models/lancamentos/lancamento.dart';
+
 class CreditCard {
+  final String? id;
+
   // Dia do vencimento
   bool vencimentoDiaUtil;
   int diaVencimento;
@@ -9,20 +17,28 @@ class CreditCard {
 
   //Dados do cartão
   String nomeCartao;
-  List<int> cardNumber;
+  String cardNumber;
   String titular;
   DateTime validade;
+  double totalLimit;
+
+  // Estilo do cartão
+  List<int> cor;
 
   CreditCard({
+    String? id,
     required this.nomeCartao,
     required this.cardNumber,
     required this.diaVencimento,
     required this.melhorDiaParaCompra,
+    required this.totalLimit,
+    this.cor = const [255, 255, 255],
     this.titular = "",
     this.vencimentoDiaUtil = false,
     this.melhorDiaParaCompraDiaUtil = false,
     DateTime? validade,
-  }) : validade = validade ?? DateTime.now();
+  })  : id = id ?? _getHashString,
+        validade = validade ?? DateTime.now();
 
   factory CreditCard.fromMap(Map creditData) {
     if (!creditData.containsKey("nomeCartao")) {
@@ -40,6 +56,8 @@ class CreditCard {
       cardNumber: creditData['numero'],
       diaVencimento: creditData['diaVencimento'],
       melhorDiaParaCompra: creditData['melhorDiaParaCompra'],
+      totalLimit: creditData["totalLimit"],
+      cor: creditData['cor'],
       titular: creditData['titular'] ?? "",
       vencimentoDiaUtil: creditData['vencimentoDiaUtil'] ?? false,
       melhorDiaParaCompraDiaUtil: creditData['melhorDiaParaCompraDiaUtil'] ?? false,
@@ -47,10 +65,45 @@ class CreditCard {
     );
   }
 
+  static String get _getHashString {
+    // Obtém a data atual
+    DateTime now = DateTime.now();
+
+    // Concatena a data e o ID do dispositivo
+    String dataToHash = '$now-WBFelipeiug';
+
+    // Calcula o hash usando o algoritmo SHA-256
+    Uint8List hashBytes = Uint8List.fromList(sha256.convert(utf8.encode(dataToHash)).bytes);
+
+    // Converte os bytes do hash para uma string hexadecimal
+    String hashString = String.fromCharCodes(hashBytes);
+
+    return hashString;
+  }
+
+  double? _gastoTotal;
+  set gastoTotal(double val) {
+    _gastoTotal = val;
+  }
+
+  double get gastoTotal {
+    return _gastoTotal ?? 0;
+  }
+
+  bool despesaInMonth(Lancamento lancamento, DateTimeRange range) {
+    // if (data.compareTo(dateRange.start) >= 0 && data.compareTo(dateRange.end) <= 0) {
+    //   return true;
+    // }
+    // return false;
+    return true;
+  }
+
   Map get toMap => {
         "nomeCartao": nomeCartao,
         "numero": cardNumber,
         "titular": titular,
+        "totalLimit": totalLimit,
+        "cor": cor,
         "validade": validade,
         "diaVencimento": diaVencimento,
         "melhorDiaParaCompra": melhorDiaParaCompra,

@@ -13,6 +13,7 @@ class Lancamento {
     this.parcelasTotal = 0,
     this.parcelaAtual = 0,
     this.fixo = false,
+    this.cartao,
   })  : id = id ?? _getHashString,
         assert(!(fixo && parcelasTotal != 0));
 
@@ -26,6 +27,7 @@ class Lancamento {
       fixo: dados["fixo"] ?? false,
       parcelasTotal: dados["parcelasTotal"] ?? 0,
       parcelaAtual: dados["parcelaAtual"] ?? 0,
+      cartao: dados["cartao"],
     );
   }
 
@@ -39,6 +41,7 @@ class Lancamento {
       "fixo": fixo,
       "parcelasTotal": parcelasTotal,
       "parcelaAtual": parcelaAtual,
+      "cartao": cartao,
     };
   }
 
@@ -67,6 +70,7 @@ class Lancamento {
       parcelasTotal: parcelasTotal,
       parcelaAtual: parcelaAtual,
       fixo: fixo,
+      cartao: cartao,
     );
   }
 
@@ -78,6 +82,7 @@ class Lancamento {
   bool fixo;
   int parcelasTotal;
   int parcelaAtual;
+  String? cartao;
 
   @override
   String toString() => "${valor > 0 ? 'Receita' : 'Despesa'}(id: $id, parcela: $parcelaAtual/$parcelasTotal, fixo: $fixo, valor: $valor)";

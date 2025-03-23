@@ -13,49 +13,53 @@ class Config {
     return true;
   }
 
+  static bool get isFirstAccess {
+    return Config.prefs?.getBool("firstAccessV1_0_0") ?? false;
+  }
+
   //Dados do usuário ///////////////////////////////
   //Usuário pró
   static bool get isPro {
-    return Config.prefs!.getBool("pro") ?? false;
+    return Config.prefs?.getBool("pro") ?? false;
   }
 
   static set isPro(bool value) {
-    Config.prefs!.setBool("pro", false);
+    Config.prefs?.setBool("pro", false);
   }
 
   //Dia do pagamento para virada do mês
   static int get diaPagamento {
-    return Config.prefs!.getInt("diaPagamento") ?? 5;
+    return Config.prefs?.getInt("diaPagamento") ?? 5;
   }
 
   static set diaPagamento(int value) {
-    Config.prefs!.setInt("diaPagamento", value);
+    Config.prefs?.setInt("diaPagamento", value);
   }
 
   //Alerta de gasto excedido
   static double get gastoMax {
-    return Config.prefs!.getDouble("gastoMax") ?? 0.0;
+    return Config.prefs?.getDouble("gastoMax") ?? 0.0;
   }
 
   static set gastoMax(double value) {
-    Config.prefs!.setDouble("gastoMax", value);
+    Config.prefs?.setDouble("gastoMax", value);
   }
 
   // Verificação se o usuário já avaliou o app
   static bool get avaliouOApp {
-    return Config.prefs!.getBool("avaliouOApp") ?? false;
+    return Config.prefs?.getBool("avaliouOApp") ?? false;
   }
 
   static set avaliouOApp(bool val) {
-    Config.prefs!.setBool("avaliouOApp", val);
+    Config.prefs?.setBool("avaliouOApp", val);
   }
 
   static DateTime get lastAvaliarOApp {
-    return DateTime.fromMillisecondsSinceEpoch(Config.prefs!.getInt("lastAvaliarOApp") ?? 0);
+    return DateTime.fromMillisecondsSinceEpoch(Config.prefs?.getInt("lastAvaliarOApp") ?? 0);
   }
 
   static set lastAvaliarOApp(DateTime value) {
-    Config.prefs!.setInt("lastAvaliarOApp", value.millisecondsSinceEpoch);
+    Config.prefs?.setInt("lastAvaliarOApp", value.millisecondsSinceEpoch);
   }
 
   //Dados do APP ///////////////////
@@ -66,7 +70,7 @@ class Config {
   }
 
   static set thema(AdaptiveThemeMode value) {
-    Config.prefs!.setString(
+    Config.prefs?.setString(
       "thema",
       value == AdaptiveThemeMode.system
           ? "aparelho"
