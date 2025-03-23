@@ -7,7 +7,7 @@ import 'package:walletbillow/features/config/config_screen.dart';
 import 'package:walletbillow/shared/themes/cores.dart';
 import 'package:walletbillow/features/home/home.dart';
 
-String versaoDoApp = "0.1.0";
+String versaoDoApp = "1.0.0";
 
 void main() {
   runApp(const MyApp());
@@ -38,15 +38,8 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: light,
             darkTheme: dark,
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              MonthYearPickerLocalizations.delegate,
-            ],
-            supportedLocales: const [
-              Locale.fromSubtags(languageCode: 'pt', countryCode: 'BR'),
-            ],
+            localizationsDelegates: const [GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate, MonthYearPickerLocalizations.delegate],
+            supportedLocales: const [Locale.fromSubtags(languageCode: 'pt', countryCode: 'BR')],
             initialRoute: "/",
             routes: {
               "/": (context) => const Home(),

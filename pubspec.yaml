@@ -45,48 +45,48 @@ dependencies:
   google_fonts: ^6.2.1
 
   #Gráficos
-  fl_chart: ^0.68.0
+  fl_chart: ^0.70.2
 
   #Open SVG
   flutter_svg: ^2.0.7
 
   #Pré splash screen
-  flutter_native_splash: ^2.3.2
+  flutter_native_splash: ^2.4.5
 
   #Animated text
-  animated_text_kit: ^4.2.2
+  animated_text_kit: ^4.2.3
 
   #Lauch url
-  url_launcher: ^6.1.12
+  url_launcher: ^6.3.1
 
   #Themas
-  flex_color_scheme: ^7.0.5
+  flex_color_scheme: ^8.1.1
 
   #Variáveis salvas localmente
-  shared_preferences: ^2.2.0
+  shared_preferences: ^2.5.2
 
   #Date picker de meses
   month_year_picker: ^0.4.0+1
 
   #Data que se adapta na hora
-  adaptive_theme: ^3.4.1
+  adaptive_theme: ^3.7.0
 
   #Gerados de hashs
-  crypto: ^3.0.3
-
+  crypto: ^3.0.6
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   
-  flutter_launcher_icons: ^0.13.1
+  flutter_launcher_icons: ^0.14.3
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 flutter_launcher_icons:
   android: "launcher_icon"
