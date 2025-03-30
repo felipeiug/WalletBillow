@@ -43,7 +43,16 @@ void changeCreditCard(
       );
 
       return AlertDialog(
-        title: Text(modificando ? "Alterar Lancamento" : "Novo Lancamento"),
+        title: Row(
+          children: [
+            Text(modificando ? "Alterar Cartão" : "Novo Cartão"),
+            Spacer(),
+            Tooltip(
+              message: "Nenhuma informação será enviada ou armazenada em nossos servidores.",
+              child: Icon(Icons.help),
+            ),
+          ],
+        ),
         content: StatefulBuilder(
           builder: (context, setState) {
             return SingleChildScrollView(
@@ -54,14 +63,70 @@ void changeCreditCard(
                   const Divider(),
 
                   //Nome
-                  const Text("Nome do Cartão:"),
+                  const Text("Apelido do Cartão:"),
                   const SizedBox(height: 5),
                   SizedBox(
                     height: 56,
                     child: TextField(
                       controller: controllerNomeCartao,
                       decoration: const InputDecoration(
-                        hintText: "Nome",
+                        hintText: "Apelido",
+                        filled: false,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  const Divider(),
+
+                  //Número do Cartão
+                  const Text("Número do Cartão:"),
+                  const SizedBox(height: 5),
+                  SizedBox(
+                    height: 56,
+                    child: TextField(
+                      controller: controllerCardNumber,
+                      onChanged: (value) {
+                        var number = value.replaceAll(RegExp(r'[^\d]'), '');
+                        if (number.length == 15) {
+                          number = number.replaceAllMapped(
+                            RegExp(r'(\d{4})(\d{6})(\d{5})'),
+                            (match) => '${match[1]} ${match[2]} ${match[3]}',
+                          );
+                        } else {
+                          number = number.replaceAllMapped(
+                            RegExp(r'(\d{4})(\d{4})(\d{4})(\d{4})'),
+                            (match) => '${match[1]} ${match[2]} ${match[3]} ${match[4]}',
+                          );
+                        }
+                        controllerCardNumber.text = number;
+                        setState(() => {});
+                      },
+                      decoration: const InputDecoration(
+                        hintText: "Número",
+                        filled: false,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      keyboardType: TextInputType.name,
+                    ),
+                  ),
+                  const Divider(),
+
+                  //Titular do Cartão
+                  const Text("Titula do Cartão:"),
+                  const SizedBox(height: 5),
+                  SizedBox(
+                    height: 56,
+                    child: TextField(
+                      controller: controllerTitular,
+                      decoration: const InputDecoration(
+                        hintText: "Titular",
                         filled: false,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(8.0)),

@@ -55,7 +55,7 @@ class CreditCardDB {
     bool? melhorDiaParaCompraDiaUtil,
     int? melhorDiaParaCompra,
     String? nomeCartao,
-    List<int>? cardNumber,
+    String? cardNumber,
     String? titular,
     DateTime? validade,
     double? totalLimit,

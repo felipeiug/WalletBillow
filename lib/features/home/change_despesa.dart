@@ -7,6 +7,7 @@ import 'package:walletbillow/core/utils/home_config.dart';
 void changeDispesa(
   BuildContext context,
   HomeUtil config, {
+  bool? receita,
   Lancamento? despesa,
   Function? onValue,
 }) async {
@@ -26,7 +27,7 @@ void changeDispesa(
         text: (despesa?.parcelasTotal ?? 0).toString(),
       );
 
-      int tipoDespesa = (despesa?.valor ?? 0) < 0 ? -1 : 1;
+      int tipoDespesa = (despesa?.valor ?? ((receita ?? false) ? 0 : -1)) < 0 ? -1 : 1;
       bool fixo = despesa?.fixo ?? false;
       DateTime data = despesa?.data ?? DateTime.now();
 

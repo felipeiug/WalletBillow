@@ -266,7 +266,34 @@ class _HomeState extends State<Home> {
                 children: [
                   Spacer(),
 
-                  // Nova despesa
+                  // Nova Receita
+                  Expanded(
+                    flex: 2,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        FilledButton.icon(
+                          onPressed: () {
+                            changeDispesa(
+                              context,
+                              config,
+                              receita: true,
+                              onValue: () => setState(() {}),
+                            );
+                          },
+                          icon: Icon(Icons.add),
+                          label: Text(
+                            "Receita",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Nova Despesa
                   Expanded(
                     flex: 2,
                     child: Row(
@@ -282,7 +309,7 @@ class _HomeState extends State<Home> {
                           },
                           icon: Icon(Icons.add),
                           label: Text(
-                            "Lançamento",
+                            "Despesa",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
