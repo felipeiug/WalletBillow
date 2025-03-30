@@ -174,7 +174,10 @@ class _CreditCardState extends State<CreditCardScreen> {
                                 IconButton(
                                   onPressed: () async {
                                     Color? newColor = await showPickerColor(context, initialColor: cor);
-                                    print(newColor);
+                                    if (newColor == null) return;
+                                    setState(() {
+                                      cor = newColor;
+                                    });
                                   },
                                   icon: Icon(Icons.square, color: cor, size: 35),
                                 ),
