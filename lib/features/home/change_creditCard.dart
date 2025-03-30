@@ -124,7 +124,7 @@ class _CreditCardState extends State<CreditCardScreen> {
                 showValidFrom: false,
                 currencySymbol: "R\$",
                 showBalance: true,
-                balance: double.tryParse(controllerTotalLimit.text) ?? 2500.0,
+                balance: double.tryParse(controllerTotalLimit.text.replaceAll(",", ".")) ?? 2500.0,
               ),
 
               // Items
@@ -145,7 +145,7 @@ class _CreditCardState extends State<CreditCardScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text("Apelido do Cartão:", style: descStyle),
+                                const Text("Apelido:", style: descStyle),
                                 SizedBox(
                                   height: 56,
                                   child: TextField(
@@ -190,7 +190,7 @@ class _CreditCardState extends State<CreditCardScreen> {
                     const Divider(),
 
                     //Número do Cartão
-                    const Text("Número do Cartão:", style: descStyle),
+                    const Text("Número:", style: descStyle),
                     const SizedBox(height: 5),
                     SizedBox(
                       height: 56,
@@ -225,144 +225,123 @@ class _CreditCardState extends State<CreditCardScreen> {
                     ),
                     const Divider(),
 
-                    //Titular do Cartão
-                    const Text("Titular do Cartão:", style: descStyle),
-                    const SizedBox(height: 5),
+                    // Titular a limite
                     SizedBox(
-                      height: 56,
-                      child: TextField(
-                        controller: controllerTitular,
-                        onChanged: (_) => setState(() {}),
-                        decoration: const InputDecoration(
-                          hintText: "Titular",
-                          filled: false,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                            borderSide: BorderSide.none,
+                      height: 86,
+                      child: Row(
+                        children: [
+                          // Titular
+                          Expanded(
+                            flex: 3,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text("Titular:", style: descStyle),
+                                SizedBox(
+                                  height: 56,
+                                  child: TextField(
+                                    controller: controllerTitular,
+                                    onChanged: (_) => setState(() {}),
+                                    decoration: const InputDecoration(
+                                      hintText: "Titular",
+                                      filled: false,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                    ),
+                                    keyboardType: TextInputType.name,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        keyboardType: TextInputType.name,
+
+                          // Limite
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text("Limite:", style: descStyle),
+                                SizedBox(
+                                  height: 56,
+                                  child: TextField(
+                                    controller: controllerTotalLimit,
+                                    decoration: InputDecoration(
+                                      filled: false,
+                                      prefix: SizedBox(
+                                        width: 26,
+                                        child: const Text("R\$"),
+                                      ),
+                                      border: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) {
+                                      String numero = value.replaceAll(RegExp(r'[^\d]'), '');
+                                      if (numero.length <= 2) {
+                                        numero = numero.padLeft(3, "0");
+                                      }
+                                      numero = "${numero.substring(0, numero.length - 2)},${numero.substring(numero.length - 2, numero.length)}";
+
+                                      //Adicionado os zeros a esquerda
+                                      numero = (int.tryParse(numero.replaceAll(",", "")) ?? 0).toString();
+                                      if (numero.length <= 2) {
+                                        numero = numero.padLeft(3, "0");
+                                      }
+                                      numero = "${numero.substring(0, numero.length - 2)},${numero.substring(numero.length - 2, numero.length)}";
+
+                                      setState(() {
+                                        controllerTotalLimit.text = numero;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const Divider(),
 
-                    //Limite
-                    const Text("Limite:", style: descStyle),
-                    const SizedBox(height: 5),
+                    // Validade
+                    const Text("Validade:", style: descStyle),
                     SizedBox(
-                      height: 56,
-                      child: TextField(
-                        controller: controllerTotalLimit,
-                        decoration: InputDecoration(
-                          filled: false,
-                          prefix: SizedBox(
+                      height: 86,
+                      child: Row(
+                        children: [
+                          // Mês
+                          SizedBox(
                             width: 26,
-                            child: const Text("R\$"),
+                            child: TextField(
+                              controller: TextEditingController(text: cartao?.validade.month.toString().padRight(2, "0") ?? ""),
+                              onChanged: (_) => setState(() {
+                                DateTime date = 
+                                cartao?.validade.month.toString().padRight(2, "0") ?? ""
+                              }),
+                              decoration: const InputDecoration(filled: false),
+                              keyboardType: TextInputType.datetime,
+                            ),
                           ),
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                            borderSide: BorderSide.none,
+                          Text("/"),
+                          // Ano
+                          SizedBox(
+                            height: 56,
+                            width: 26,
+                            child: TextField(
+                              controller: controllerTitular,
+                              onChanged: (_) => setState(() {}),
+                              decoration: const InputDecoration(filled: false),
+                              keyboardType: TextInputType.datetime,
+                            ),
                           ),
-                        ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          String numero = value.replaceAll(RegExp(r'[^\d]'), '');
-                          if (numero.length <= 2) {
-                            numero = numero.padLeft(3, "0");
-                          }
-                          numero = "${numero.substring(0, numero.length - 2)},${numero.substring(numero.length - 2, numero.length)}";
-
-                          //Adicionado os zeros a esquerda
-                          numero = (int.tryParse(numero.replaceAll(",", "")) ?? 0).toString();
-                          if (numero.length <= 2) {
-                            numero = numero.padLeft(3, "0");
-                          }
-                          numero = "${numero.substring(0, numero.length - 2)},${numero.substring(numero.length - 2, numero.length)}";
-
-                          setState(() {
-                            controllerTotalLimit.text = numero;
-                          });
-                        },
+                        ],
                       ),
                     ),
-                    const Divider(),
-
-                    // // Pagamento fixo
-                    // Row(
-                    //   children: [
-                    //     Text("${tipoDespesa == -1 ? "Despesa" : "Receita"} Fixa:"),
-                    //     const Spacer(),
-                    //     Checkbox(
-                    //       value: fixo,
-                    //       onChanged: (value) {
-                    //         setState(() {
-                    //           fixo = !fixo;
-                    //           if (fixo) {
-                    //             controllerParcelas.text = "";
-                    //           }
-                    //         });
-                    //       },
-                    //     )
-                    //   ],
-                    // ),
-                    // const Divider(),
-
-                    // // Pagamento parcelado
-                    // fixo ? const SizedBox() : const Text("Parcelas:"),
-                    // fixo
-                    //     ? const SizedBox()
-                    //     : SizedBox(
-                    //         height: 56,
-                    //         child: TextField(
-                    //           controller: controllerParcelas,
-                    //           decoration: const InputDecoration(
-                    //             filled: false,
-                    //             prefix: Text("X    "),
-                    //             border: OutlineInputBorder(
-                    //               borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                    //               borderSide: BorderSide.none,
-                    //             ),
-                    //           ),
-                    //           keyboardType: const TextInputType.numberWithOptions(
-                    //             decimal: true,
-                    //             signed: true,
-                    //           ),
-                    //           onChanged: (value) {
-                    //             String numero = value.replaceAll(RegExp("[,.+-]"), "");
-                    //             numero = (int.tryParse(numero) ?? 0).toString();
-                    //             controllerParcelas.text = numero;
-                    //           },
-                    //         ),
-                    //       ),
-                    // fixo ? const SizedBox() : const Divider(),
-
-                    // // Data
-                    // Row(
-                    //   children: [
-                    //     const Text("Data:"),
-                    //     const Spacer(),
-                    //     ElevatedButton(
-                    //       onPressed: () async {
-                    //         DateTime? dataNow = await showDatePicker(
-                    //           context: context,
-                    //           firstDate: DateTime(0),
-                    //           lastDate: DateTime(DateTime.now().year + 9999),
-                    //           initialDate: data,
-                    //         );
-
-                    //         if (dataNow != null) {
-                    //           setState(() {
-                    //             data = dataNow;
-                    //           });
-                    //         }
-                    //       },
-                    //       child: Text(
-                    //         DateFormat('dd/MM/yyyy', 'pt_BR').format(data),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    // const Divider(),
                   ],
                 ),
               ),
