@@ -1,467 +1,372 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl/intl.dart';
+import 'package:u_credit_card/u_credit_card.dart';
 import 'package:walletbillow/core/models/credit_card/credit_card.dart';
 import 'package:walletbillow/core/models/lancamentos/lancamento.dart';
 import 'package:walletbillow/shared/themes/widgets.dart';
 import 'package:walletbillow/core/utils/home_config.dart';
+import 'package:walletbillow/shared/widgets/color_picker.dart';
 
-void changeCreditCard(
-  BuildContext context,
-  HomeUtil config, {
-  CreditCard? cartao,
-  Function? onValue,
-}) async {
-  showDialog(
-    context: context,
-    builder: (context) {
-      //Checando se está modificando ou criando
-      bool modificando = cartao != null;
+class CreditCardScreen extends StatefulWidget {
+  const CreditCardScreen(
+    this.config, {
+    super.key,
+    this.cartao,
+  });
 
-      int diaVencimento = cartao?.diaVencimento ?? 15;
-      int melhorDiaParaCompra = cartao?.melhorDiaParaCompra ?? 15;
-      DateTime validade = cartao?.validade ?? (DateTime.now().add(const Duration(days: 365 * 2)));
+  final HomeUtil config;
+  final CreditCard? cartao;
 
-      // Estilo do cartão
-      Color cor = Color.fromARGB(
-        cartao?.cor[0] ?? 255,
-        cartao?.cor[1] ?? 128,
-        cartao?.cor[2] ?? 59,
-        cartao?.cor[3] ?? 179,
-      );
+  @override
+  State<CreditCardScreen> createState() => _CreditCardState();
+}
 
-      TextEditingController controllerNomeCartao = TextEditingController(
-        text: (cartao?.nomeCartao ?? ""),
-      );
-      TextEditingController controllerCardNumber = TextEditingController(
-        text: (cartao?.cardNumber ?? ""),
-      );
-      TextEditingController controllerTitular = TextEditingController(
-        text: (cartao?.titular ?? ""),
-      );
-      TextEditingController controllerTotalLimit = TextEditingController(
-        text: (cartao?.totalLimit ?? 2500).toStringAsFixed(2).replaceAll(".", ",").replaceAll("-", ""),
-      );
+class _CreditCardState extends State<CreditCardScreen> {
+  // Dados do cartão
+  CreditCard? cartao;
 
-      return AlertDialog(
-        title: Row(
-          children: [
-            Text(modificando ? "Alterar Cartão" : "Novo Cartão"),
-            Spacer(),
-            Tooltip(
-              message: "Nenhuma informação será enviada ou armazenada em nossos servidores.",
-              child: Icon(Icons.help),
-            ),
-          ],
-        ),
-        content: StatefulBuilder(
-          builder: (context, setState) {
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+  //Checando se está modificando ou criando
+  late bool modificando;
+
+  late int diaVencimento;
+  late int melhorDiaParaCompra;
+  late DateTime validade;
+
+  // Estilo do cartão
+  late Color cor = Color.fromARGB(
+    cartao?.cor[0] ?? 255,
+    cartao?.cor[1] ?? 128,
+    cartao?.cor[2] ?? 59,
+    cartao?.cor[3] ?? 179,
+  );
+
+  late TextEditingController controllerNomeCartao;
+  late TextEditingController controllerCardNumber;
+  late TextEditingController controllerTitular;
+  late TextEditingController controllerTotalLimit;
+
+  @override
+  void initState() {
+    super.initState();
+
+    cartao = widget.cartao;
+
+    modificando = cartao != null;
+
+    diaVencimento = cartao?.diaVencimento ?? 15;
+    melhorDiaParaCompra = cartao?.melhorDiaParaCompra ?? 15;
+    validade = cartao?.validade ?? (DateTime.now().add(const Duration(days: 365 * 2)));
+
+    cor = Color.fromARGB(
+      cartao?.cor[0] ?? 255,
+      cartao?.cor[1] ?? 128,
+      cartao?.cor[2] ?? 59,
+      cartao?.cor[3] ?? 179,
+    );
+
+    controllerNomeCartao = TextEditingController(
+      text: (cartao?.nomeCartao ?? ""),
+    );
+    controllerCardNumber = TextEditingController(
+      text: (cartao?.cardNumber ?? ""),
+    );
+    controllerTitular = TextEditingController(
+      text: (cartao?.titular ?? ""),
+    );
+    controllerTotalLimit = TextEditingController(
+      text: (cartao?.totalLimit ?? 2500).toStringAsFixed(2).replaceAll(".", ",").replaceAll("-", ""),
+    );
+  }
+
+  String getValidateString() {
+    return "${validade.month.toString().padRight(2, "0")}/${validade.year.toString().substring(2)}";
+  }
+
+  void onfinish() {
+    Navigator.pop(context, cartao);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const descStyle = TextStyle(fontSize: 18);
+
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
+          padding: EdgeInsets.all(15),
+          child: Column(
+            children: [
+              // Título
+              Row(
                 children: [
-                  //Divisor
-                  const Divider(),
-
-                  //Nome
-                  const Text("Apelido do Cartão:"),
-                  const SizedBox(height: 5),
-                  SizedBox(
-                    height: 56,
-                    child: TextField(
-                      controller: controllerNomeCartao,
-                      decoration: const InputDecoration(
-                        hintText: "Apelido",
-                        filled: false,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                    ),
+                  Text(
+                    modificando ? "Alterar Cartão" : "Novo Cartão",
+                    style: TextStyle(fontSize: 28),
                   ),
-                  const Divider(),
-
-                  //Número do Cartão
-                  const Text("Número do Cartão:"),
-                  const SizedBox(height: 5),
-                  SizedBox(
-                    height: 56,
-                    child: TextField(
-                      controller: controllerCardNumber,
-                      onChanged: (value) {
-                        var number = value.replaceAll(RegExp(r'[^\d]'), '');
-                        if (number.length == 15) {
-                          number = number.replaceAllMapped(
-                            RegExp(r'(\d{4})(\d{6})(\d{5})'),
-                            (match) => '${match[1]} ${match[2]} ${match[3]}',
-                          );
-                        } else {
-                          number = number.replaceAllMapped(
-                            RegExp(r'(\d{4})(\d{4})(\d{4})(\d{4})'),
-                            (match) => '${match[1]} ${match[2]} ${match[3]} ${match[4]}',
-                          );
-                        }
-                        controllerCardNumber.text = number;
-                        setState(() => {});
-                      },
-                      decoration: const InputDecoration(
-                        hintText: "Número",
-                        filled: false,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      keyboardType: TextInputType.name,
-                    ),
+                  Spacer(),
+                  Tooltip(
+                    message: "Nenhuma informação será enviada ou armazenada em nossos servidores.",
+                    child: Icon(Icons.help),
                   ),
-                  const Divider(),
-
-                  //Titular do Cartão
-                  const Text("Titula do Cartão:"),
-                  const SizedBox(height: 5),
-                  SizedBox(
-                    height: 56,
-                    child: TextField(
-                      controller: controllerTitular,
-                      decoration: const InputDecoration(
-                        hintText: "Titular",
-                        filled: false,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      keyboardType: TextInputType.name,
-                    ),
-                  ),
-                  const Divider(),
-
-                  //Valor
-                  // const Text("Valor:"),
-                  // const SizedBox(height: 5),
-                  // SizedBox(
-                  //   height: 56,
-                  //   child: TextField(
-                  //     controller: controllerValor,
-                  //     decoration: InputDecoration(
-                  //       filled: false,
-                  //       prefix: SizedBox(
-                  //         width: 76,
-                  //         child: Row(
-                  //           children: [
-                  //             const Text("R\$"),
-                  //             Transform.scale(
-                  //               scale: 0.8,
-                  //               child: IconButton(
-                  //                   icon: Icon(
-                  //                     tipoDespesa == -1 ? Icons.remove : Icons.add,
-                  //                   ),
-                  //                   onPressed: () {
-                  //                     setState(() {
-                  //                       tipoDespesa = tipoDespesa == -1 ? 1 : -1;
-                  //                     });
-                  //                   }),
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       ),
-                  //       border: const OutlineInputBorder(
-                  //         borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  //         borderSide: BorderSide.none,
-                  //       ),
-                  //     ),
-                  //     keyboardType: TextInputType.number,
-                  //     onChanged: (value) {
-                  //       bool minus = value.contains("-");
-                  //       bool plus = value.contains("+");
-
-                  //       String numero = value.replaceAll(RegExp("[,.+-]"), "");
-                  //       if (numero.length <= 2) {
-                  //         numero = numero.padLeft(3, "0");
-                  //       }
-                  //       numero = "${numero.substring(0, numero.length - 2)},${numero.substring(numero.length - 2, numero.length)}";
-
-                  //       //Adicionado os zeros a esquerda
-                  //       numero = (int.tryParse(numero.replaceAll(",", "")) ?? 0).toString();
-                  //       if (numero.length <= 2) {
-                  //         numero = numero.padLeft(3, "0");
-                  //       }
-                  //       numero = "${numero.substring(0, numero.length - 2)},${numero.substring(numero.length - 2, numero.length)}";
-
-                  //       // Caso seja negativo
-                  //       if (minus) {
-                  //         setState(() {
-                  //           tipoDespesa = -1;
-                  //         });
-                  //       } else if (plus) {
-                  //         setState(() {
-                  //           tipoDespesa = 1;
-                  //         });
-                  //       }
-
-                  //       controllerValor.text = numero;
-                  //     },
-                  //   ),
-                  // ),
-                  // const Divider(),
-
-                  // // Pagamento fixo
-                  // Row(
-                  //   children: [
-                  //     Text("${tipoDespesa == -1 ? "Despesa" : "Receita"} Fixa:"),
-                  //     const Spacer(),
-                  //     Checkbox(
-                  //       value: fixo,
-                  //       onChanged: (value) {
-                  //         setState(() {
-                  //           fixo = !fixo;
-                  //           if (fixo) {
-                  //             controllerParcelas.text = "";
-                  //           }
-                  //         });
-                  //       },
-                  //     )
-                  //   ],
-                  // ),
-                  // const Divider(),
-
-                  // // Pagamento parcelado
-                  // fixo ? const SizedBox() : const Text("Parcelas:"),
-                  // fixo
-                  //     ? const SizedBox()
-                  //     : SizedBox(
-                  //         height: 56,
-                  //         child: TextField(
-                  //           controller: controllerParcelas,
-                  //           decoration: const InputDecoration(
-                  //             filled: false,
-                  //             prefix: Text("X    "),
-                  //             border: OutlineInputBorder(
-                  //               borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  //               borderSide: BorderSide.none,
-                  //             ),
-                  //           ),
-                  //           keyboardType: const TextInputType.numberWithOptions(
-                  //             decimal: true,
-                  //             signed: true,
-                  //           ),
-                  //           onChanged: (value) {
-                  //             String numero = value.replaceAll(RegExp("[,.+-]"), "");
-                  //             numero = (int.tryParse(numero) ?? 0).toString();
-                  //             controllerParcelas.text = numero;
-                  //           },
-                  //         ),
-                  //       ),
-                  // fixo ? const SizedBox() : const Divider(),
-
-                  // // Data
-                  // Row(
-                  //   children: [
-                  //     const Text("Data:"),
-                  //     const Spacer(),
-                  //     ElevatedButton(
-                  //       onPressed: () async {
-                  //         DateTime? dataNow = await showDatePicker(
-                  //           context: context,
-                  //           firstDate: DateTime(0),
-                  //           lastDate: DateTime(DateTime.now().year + 9999),
-                  //           initialDate: data,
-                  //         );
-
-                  //         if (dataNow != null) {
-                  //           setState(() {
-                  //             data = dataNow;
-                  //           });
-                  //         }
-                  //       },
-                  //       child: Text(
-                  //         DateFormat('dd/MM/yyyy', 'pt_BR').format(data),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                  // const Divider(),
                 ],
               ),
-            );
-          },
+              const Divider(),
+
+              // Visualização do cartão
+              CreditCardUi(
+                cardHolderFullName: controllerTitular.text,
+                cardNumber: controllerCardNumber.text,
+                validThru: getValidateString(),
+                topLeftColor: cor,
+                bottomRightColor: cor.darken(30),
+                showValidFrom: false,
+                currencySymbol: "R\$",
+                showBalance: true,
+                balance: double.tryParse(controllerTotalLimit.text) ?? 2500.0,
+              ),
+
+              // Items
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //Divisor
+                    const Divider(),
+
+                    //Apelido e Cor
+                    SizedBox(
+                      height: 86,
+                      child: Row(
+                        children: [
+                          // Apelido
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text("Apelido do Cartão:", style: descStyle),
+                                SizedBox(
+                                  height: 56,
+                                  child: TextField(
+                                    controller: controllerNomeCartao,
+                                    onChanged: (_) => setState(() {}),
+                                    decoration: const InputDecoration(
+                                      hintText: "Apelido",
+                                      filled: false,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Cor do Cartão
+                          Expanded(
+                            child: Column(
+                              children: [
+                                const Text("Cor:", style: descStyle),
+                                IconButton(
+                                  onPressed: () async {
+                                    Color? newColor = await showPickerColor(context, initialColor: cor);
+                                    print(newColor);
+                                  },
+                                  icon: Icon(Icons.square, color: cor, size: 35),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(),
+
+                    //Número do Cartão
+                    const Text("Número do Cartão:", style: descStyle),
+                    const SizedBox(height: 5),
+                    SizedBox(
+                      height: 56,
+                      child: TextField(
+                        controller: controllerCardNumber,
+                        onChanged: (value) {
+                          var number = value.replaceAll(RegExp(r'[^\d]'), '');
+                          if (number.length == 15) {
+                            number = number.replaceAllMapped(
+                              RegExp(r'(\d{4})(\d{6})(\d{5})'),
+                              (match) => '${match[1]} ${match[2]} ${match[3]}',
+                            );
+                          } else {
+                            number = number.replaceAllMapped(
+                              RegExp(r'(\d{4})(\d{4})(\d{4})(\d{4})'),
+                              (match) => '${match[1]} ${match[2]} ${match[3]} ${match[4]}',
+                            );
+                          }
+                          controllerCardNumber.text = number;
+                          setState(() => {});
+                        },
+                        decoration: const InputDecoration(
+                          hintText: "Número",
+                          filled: false,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        keyboardType: TextInputType.name,
+                      ),
+                    ),
+                    const Divider(),
+
+                    //Titular do Cartão
+                    const Text("Titular do Cartão:", style: descStyle),
+                    const SizedBox(height: 5),
+                    SizedBox(
+                      height: 56,
+                      child: TextField(
+                        controller: controllerTitular,
+                        onChanged: (_) => setState(() {}),
+                        decoration: const InputDecoration(
+                          hintText: "Titular",
+                          filled: false,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        keyboardType: TextInputType.name,
+                      ),
+                    ),
+                    const Divider(),
+
+                    //Limite
+                    const Text("Limite:", style: descStyle),
+                    const SizedBox(height: 5),
+                    SizedBox(
+                      height: 56,
+                      child: TextField(
+                        controller: controllerTotalLimit,
+                        decoration: InputDecoration(
+                          filled: false,
+                          prefix: SizedBox(
+                            width: 26,
+                            child: const Text("R\$"),
+                          ),
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          String numero = value.replaceAll(RegExp(r'[^\d]'), '');
+                          if (numero.length <= 2) {
+                            numero = numero.padLeft(3, "0");
+                          }
+                          numero = "${numero.substring(0, numero.length - 2)},${numero.substring(numero.length - 2, numero.length)}";
+
+                          //Adicionado os zeros a esquerda
+                          numero = (int.tryParse(numero.replaceAll(",", "")) ?? 0).toString();
+                          if (numero.length <= 2) {
+                            numero = numero.padLeft(3, "0");
+                          }
+                          numero = "${numero.substring(0, numero.length - 2)},${numero.substring(numero.length - 2, numero.length)}";
+
+                          setState(() {
+                            controllerTotalLimit.text = numero;
+                          });
+                        },
+                      ),
+                    ),
+                    const Divider(),
+
+                    // // Pagamento fixo
+                    // Row(
+                    //   children: [
+                    //     Text("${tipoDespesa == -1 ? "Despesa" : "Receita"} Fixa:"),
+                    //     const Spacer(),
+                    //     Checkbox(
+                    //       value: fixo,
+                    //       onChanged: (value) {
+                    //         setState(() {
+                    //           fixo = !fixo;
+                    //           if (fixo) {
+                    //             controllerParcelas.text = "";
+                    //           }
+                    //         });
+                    //       },
+                    //     )
+                    //   ],
+                    // ),
+                    // const Divider(),
+
+                    // // Pagamento parcelado
+                    // fixo ? const SizedBox() : const Text("Parcelas:"),
+                    // fixo
+                    //     ? const SizedBox()
+                    //     : SizedBox(
+                    //         height: 56,
+                    //         child: TextField(
+                    //           controller: controllerParcelas,
+                    //           decoration: const InputDecoration(
+                    //             filled: false,
+                    //             prefix: Text("X    "),
+                    //             border: OutlineInputBorder(
+                    //               borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                    //               borderSide: BorderSide.none,
+                    //             ),
+                    //           ),
+                    //           keyboardType: const TextInputType.numberWithOptions(
+                    //             decimal: true,
+                    //             signed: true,
+                    //           ),
+                    //           onChanged: (value) {
+                    //             String numero = value.replaceAll(RegExp("[,.+-]"), "");
+                    //             numero = (int.tryParse(numero) ?? 0).toString();
+                    //             controllerParcelas.text = numero;
+                    //           },
+                    //         ),
+                    //       ),
+                    // fixo ? const SizedBox() : const Divider(),
+
+                    // // Data
+                    // Row(
+                    //   children: [
+                    //     const Text("Data:"),
+                    //     const Spacer(),
+                    //     ElevatedButton(
+                    //       onPressed: () async {
+                    //         DateTime? dataNow = await showDatePicker(
+                    //           context: context,
+                    //           firstDate: DateTime(0),
+                    //           lastDate: DateTime(DateTime.now().year + 9999),
+                    //           initialDate: data,
+                    //         );
+
+                    //         if (dataNow != null) {
+                    //           setState(() {
+                    //             data = dataNow;
+                    //           });
+                    //         }
+                    //       },
+                    //       child: Text(
+                    //         DateFormat('dd/MM/yyyy', 'pt_BR').format(data),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    // const Divider(),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-        // actions: [
-        //   //Cancelar
-        //   OutlinedButton(
-        //     onPressed: () {
-        //       Navigator.of(context).pop();
-        //     },
-        //     child: const Text("Cancelar"),
-        //   ),
-
-        //   // Espaçador
-        //   const SizedBox(
-        //     width: 5,
-        //     height: 5,
-        //   ),
-
-        //   //Adicionar ou aplicar a todos
-        //   if (!modificando || despesa.parcelasTotal > 0 || despesa.fixo)
-        //     ElevatedButton(
-        //       onPressed: () async {
-        //         double valor = 0;
-
-        //         if (controllerDescricao.text.isEmpty) {
-        //           showDialog(
-        //             context: context,
-        //             builder: (context) {
-        //               return const AlertDialog(
-        //                 title: Text("Erro"),
-        //                 content: Text("Adicione uma descrição!"),
-        //               );
-        //             },
-        //           );
-        //           return;
-        //         }
-        //         if (controllerValor.text.isEmpty || (double.tryParse(controllerValor.text.replaceAll(",", ".")) ?? 0) == 0) {
-        //           showDialog(
-        //             context: context,
-        //             builder: (context) {
-        //               return const AlertDialog(
-        //                 title: Text("Erro"),
-        //                 content: Text("O valor da despesa deve ser diferente de 0."),
-        //               );
-        //             },
-        //           );
-        //           return;
-        //         } else {
-        //           valor = double.tryParse(controllerValor.text.replaceAll(",", ".")) ?? 0;
-        //           if (tipoDespesa == -1) {
-        //             valor *= -1;
-        //           }
-        //         }
-
-        //         int? parcelasTotal = int.tryParse(controllerParcelas.text.replaceAll(",", "."));
-
-        //         if (!modificando) {
-        //           await config.addDespesa(
-        //             nome: controllerDescricao.text,
-        //             data: data,
-        //             valor: valor,
-        //             parcelasTotal: parcelasTotal ?? 0,
-        //             fixo: (parcelasTotal ?? 0) == 0 && fixo,
-        //           );
-        //         } else {
-        //           await config.editDespesa(
-        //             id: despesa.id,
-        //             parcela: despesa.parcelaAtual,
-        //             descricao: controllerDescricao.text,
-        //             data: data,
-        //             valor: valor,
-        //             parcelasTotal: parcelasTotal ?? despesa.parcelasTotal,
-        //             fixo: (parcelasTotal ?? 0) == 0 && fixo,
-        //             pago: despesa.pago,
-        //           );
-        //         }
-
-        //         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        //           Navigator.of(context).pop();
-        //         });
-        //       },
-        //       child: Text(modificando ? "Alterar toda a série" : "Adicionar"),
-        //     ),
-
-        //   // Espaçador
-        //   const SizedBox(
-        //     width: 5,
-        //     height: 5,
-        //   ),
-
-        //   // Alterar somente este mês
-        //   if (modificando)
-        //     ElevatedButton(
-        //       onPressed: () async {
-        //         double valor = 0;
-
-        //         if (controllerDescricao.text.isEmpty) {
-        //           showDialog(
-        //             context: context,
-        //             builder: (context) {
-        //               return const AlertDialog(
-        //                 title: Text("Erro"),
-        //                 content: Text("Adicione uma descrição!"),
-        //               );
-        //             },
-        //           );
-        //           return;
-        //         }
-        //         if (controllerValor.text.isEmpty || (double.tryParse(controllerValor.text.replaceAll(",", ".")) ?? 0) == 0) {
-        //           showDialog(
-        //             context: context,
-        //             builder: (context) {
-        //               return const AlertDialog(
-        //                 title: Text("Erro"),
-        //                 content: Text("O valor da despesa deve ser diferente de 0."),
-        //               );
-        //             },
-        //           );
-        //           return;
-        //         } else {
-        //           valor = double.tryParse(controllerValor.text.replaceAll(",", ".")) ?? 0;
-        //           if (tipoDespesa == -1) {
-        //             valor *= -1;
-        //           }
-        //         }
-
-        //         int? parcelasTotal = int.tryParse(controllerParcelas.text.replaceAll(",", "."));
-        //         if (parcelasTotal != despesa.parcelasTotal) {
-        //           bool confirm = await Widgets.confimation(
-        //             context,
-        //             title: "Impossível alterar as parcelas",
-        //             subtitle: "Quando modificar apenas um mês não é possível alterar a quantidade de parcelas.\nDeseja continuar sem alterar as parcelas?",
-        //           );
-
-        //           if (!confirm) {
-        //             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        //               Navigator.of(context).pop();
-        //             });
-        //             return;
-        //           }
-        //         }
-
-        //         if (despesa.fixo != fixo) {
-        //           bool confirm = await Widgets.confimation(
-        //             context,
-        //             title: "Impossível alterar o fixo",
-        //             subtitle: "Quando modificar apenas um mês não é possível alterar se é fixo ou não fixo.\nDeseja continuar sem alterar o estado?",
-        //           );
-
-        //           if (!confirm) {
-        //             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        //               Navigator.of(context).pop();
-        //             });
-        //             return;
-        //           }
-        //         }
-
-        //         await config.editDespesa(
-        //           id: despesa.id,
-        //           parcela: despesa.parcelaAtual,
-        //           editAll: false,
-        //           parcelasTotal: 0,
-        //           descricao: controllerDescricao.text,
-        //           data: data,
-        //           valor: valor,
-        //           fixo: (parcelasTotal ?? 0) == 0 && fixo,
-        //           pago: despesa.pago,
-        //         );
-
-        //         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        //           Navigator.of(context).pop();
-        //         });
-        //       },
-        //       child: Text(despesa.parcelasTotal > 0 || despesa.fixo ? "Alterar somente este mês" : "Alterar Lancamento"),
-        //     ),
-        // ],
-      );
-    },
-  ).then((value) => onValue != null ? onValue() : null);
+      ),
+    );
+  }
 }

@@ -325,12 +325,13 @@ class _HomeState extends State<Home> {
                       children: [
                         Spacer(),
                         IconButton(
-                          onPressed: () {
-                            changeCreditCard(
+                          onPressed: () async {
+                            // final resultado =
+                            await Navigator.push(
                               context,
-                              config,
-                              onValue: () => setState(() {}),
+                              MaterialPageRoute(builder: (context) => CreditCardScreen(config)),
                             );
+                            setState(() {});
                           },
                           tooltip: "Cartões",
                           icon: Icon(Icons.credit_card),
