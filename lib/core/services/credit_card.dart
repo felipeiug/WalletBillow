@@ -6,7 +6,6 @@ import 'package:walletbillow/core/models/credit_card/credit_card.dart';
 
 class CreditCardDB {
   static Future<CreditCardDB> init() async {
-    await Future.delayed(const Duration(seconds: 3));
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return CreditCardDB(prefs);
   }
@@ -96,7 +95,7 @@ class CreditCardDB {
     String? cardNumber,
     String? titular,
     DateTime? validade,
-    double? totalLimit,
+    int? totalLimit,
     List<int>? cor,
   }) {
     List<CreditCard> newGastos = cards.map((element) {

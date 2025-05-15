@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:u_credit_card/u_credit_card.dart';
 import 'package:walletbillow/core/models/lancamentos/lancamento.dart';
 
 class CreditCard {
-  final String? id;
+  final String id;
 
   // Dia do vencimento
   bool vencimentoDiaUtil;
@@ -20,7 +21,7 @@ class CreditCard {
   String cardNumber;
   String titular;
   DateTime validade;
-  double totalLimit;
+  int totalLimit;
 
   // Estilo do cartão
   List<int> cor;
@@ -81,6 +82,35 @@ class CreditCard {
     return hashString;
   }
 
+  static CreditCardType detectCardType(String cardNumber) {
+    // Remove todos os espaços e caracteres não numéricos
+    final cleanedNumber = cardNumber.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (cleanedNumber.isEmpty) return CreditCardType.none;
+
+    // Visa (começa com 4)
+    if (RegExp(r'^4').hasMatch(cleanedNumber)) {
+      return CreditCardType.visa;
+    }
+
+    // Mastercard (51-55 ou 2221-2720)
+    if (RegExp(r'^5[1-5]').hasMatch(cleanedNumber) || RegExp(r'^2[2-7][2-9][0-9]').hasMatch(cleanedNumber)) {
+      return CreditCardType.mastercard;
+    }
+
+    // Amex (34 ou 37)
+    if (RegExp(r'^3[47]').hasMatch(cleanedNumber)) {
+      return CreditCardType.amex;
+    }
+
+    // Discover (6011, 644-649, 65)
+    if (RegExp(r'^6011').hasMatch(cleanedNumber) || RegExp(r'^64[4-9]').hasMatch(cleanedNumber) || RegExp(r'^65').hasMatch(cleanedNumber)) {
+      return CreditCardType.discover;
+    }
+
+    return CreditCardType.none;
+  }
+
   double? _gastoTotal;
   set gastoTotal(double val) {
     _gastoTotal = val;
@@ -99,6 +129,7 @@ class CreditCard {
   }
 
   Map get toMap => {
+        "id": id,
         "nomeCartao": nomeCartao,
         "numero": cardNumber,
         "titular": titular,

@@ -10,6 +10,7 @@ import 'package:month_year_picker/month_year_picker.dart';
 import 'package:u_credit_card/u_credit_card.dart';
 import 'package:credit_card_type_detector/credit_card_type_detector.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:walletbillow/core/models/credit_card/credit_card.dart';
 
 import 'package:walletbillow/core/services/config_data.dart';
 import 'package:walletbillow/core/models/lancamentos/lancamento.dart';
@@ -260,15 +261,15 @@ class _HomeState extends State<Home> {
             extendBody: true,
             bottomNavigationBar: Container(
               color: Theme.of(context).cardColor,
-              padding: EdgeInsets.all(3),
+              padding: EdgeInsets.all(15),
               height: 76,
               child: Row(
                 children: [
                   Spacer(),
 
                   // Nova Receita
-                  Expanded(
-                    flex: 2,
+                  SizedBox(
+                    width: 126,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -294,8 +295,8 @@ class _HomeState extends State<Home> {
                   ),
 
                   // Nova Despesa
-                  Expanded(
-                    flex: 2,
+                  SizedBox(
+                    width: 126,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -326,8 +327,7 @@ class _HomeState extends State<Home> {
                         Spacer(),
                         IconButton(
                           onPressed: () async {
-                            // final resultado =
-                            await Navigator.push(
+                            await Navigator.push<CreditCard>(
                               context,
                               MaterialPageRoute(builder: (context) => CreditCardScreen(config)),
                             );
