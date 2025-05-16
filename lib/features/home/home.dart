@@ -3,12 +3,9 @@ import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:credit_card_type_detector/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:month_year_picker/month_year_picker.dart';
-import 'package:u_credit_card/u_credit_card.dart';
-import 'package:credit_card_type_detector/credit_card_type_detector.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walletbillow/core/models/credit_card/credit_card.dart';
 
@@ -506,9 +503,9 @@ class _HomeState extends State<Home> {
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                           child: ListView.builder(
-                            itemCount: lenDespesas + 5,
+                            itemCount: lenDespesas + 3,
                             itemBuilder: (context, index) {
-                              if (index == lenDespesas + 4) {
+                              if (index == lenDespesas + 3) {
                                 return const SizedBox(height: 26);
                               }
 
@@ -523,46 +520,8 @@ class _HomeState extends State<Home> {
                                 return const Divider();
                               } else if (index == config.receitas.length + 1) {
                                 return const Text("Despesas");
-                              }
-                              // Cartões
-                              else if (index == config.receitas.length + 2) {
-                                return ExpansionTile(
-                                  title: Text("Cartões"),
-                                  children: [
-                                    Builder(
-                                      builder: (context) {
-                                        var cards = detectCCType('2500600001767670');
-
-                                        var cardType = CreditCardType.none;
-                                        if (cards.isNotEmpty) {
-                                          switch (cards[0].type) {
-                                            case TYPE_VISA:
-                                              cardType = CreditCardType.visa;
-                                              break;
-                                            case TYPE_MASTERCARD:
-                                              cardType = CreditCardType.mastercard;
-                                              break;
-                                            case TYPE_AMEX:
-                                              cardType = CreditCardType.amex;
-                                              break;
-                                            case TYPE_DISCOVER:
-                                              cardType = CreditCardType.discover;
-                                              break;
-                                          }
-                                        }
-
-                                        return CreditCardUi(
-                                          cardHolderFullName: "Felipe E D Ribeiro",
-                                          cardNumber: '2500600001767670',
-                                          validThru: '10/24',
-                                          creditCardType: cardType,
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                );
                               } else if (index > config.receitas.length) {
-                                index = index - config.receitas.length - 3;
+                                index = index - config.receitas.length - 2;
                                 ePagamento = true;
                               }
 

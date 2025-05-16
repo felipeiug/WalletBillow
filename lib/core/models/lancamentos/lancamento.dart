@@ -85,7 +85,7 @@ class Lancamento {
   String? cartao;
 
   @override
-  String toString() => "${valor > 0 ? 'Receita' : 'Despesa'}(id: $id, parcela: $parcelaAtual/$parcelasTotal, fixo: $fixo, valor: $valor)";
+  String toString() => "${valor >= 0 ? 'Receita' : 'Despesa'}(id: $id, parcela: $parcelaAtual/$parcelasTotal, fixo: $fixo, valor: $valor, cartão: $cartao)";
 
   bool inDateTimeRange(DateTimeRange dateRange) {
     if (data.compareTo(dateRange.start) >= 0 && data.compareTo(dateRange.end) <= 0) {

@@ -22,6 +22,8 @@ class HomeUtil {
 
   // Lista de pagamentos
   Future getPayments() async {
+    // Verificar dados no cartão também, para não retornar os dados 2 vezes.
+
     List<Lancamento> gastos = gastosDB.gastos;
     List<Lancamento> newGastos = [];
 

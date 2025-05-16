@@ -121,6 +121,13 @@ class CreditCard {
   }
 
   bool despesaInMonth(Lancamento lancamento, DateTimeRange range) {
+    if (lancamento.cartao != id) {
+      return false;
+    }
+
+    // Ver com o range de datas, o range deste cartão.
+    // Com isto da pra saber se a data do lançamento está na mesma data deste cartão.
+
     // if (data.compareTo(dateRange.start) >= 0 && data.compareTo(dateRange.end) <= 0) {
     //   return true;
     // }
