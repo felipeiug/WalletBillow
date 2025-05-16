@@ -52,17 +52,19 @@ class CreditCard {
       throw Exception("Os dados devem conter o melhor dia para compra do Cartão");
     }
 
+    List<int> cor = (creditData['cor'] as List<dynamic>).map((val) => (val as int).toInt()).toList();
+
     return CreditCard(
       nomeCartao: creditData['nomeCartao'],
       cardNumber: creditData['numero'],
       diaVencimento: creditData['diaVencimento'],
       melhorDiaParaCompra: creditData['melhorDiaParaCompra'],
       totalLimit: creditData["totalLimit"],
-      cor: creditData['cor'],
+      cor: cor,
       titular: creditData['titular'] ?? "",
       vencimentoDiaUtil: creditData['vencimentoDiaUtil'] ?? false,
       melhorDiaParaCompraDiaUtil: creditData['melhorDiaParaCompraDiaUtil'] ?? false,
-      validade: creditData['validade'] ?? DateTime.now(),
+      validade: creditData['validade'] != null ? DateTime(int.parse((creditData['validade'] as String).split("-")[1]), int.parse((creditData['validade'] as String).split("-")[0])) : DateTime.now(),
     );
   }
 
@@ -142,7 +144,7 @@ class CreditCard {
         "titular": titular,
         "totalLimit": totalLimit,
         "cor": cor,
-        "validade": validade,
+        "validade": "${validade.month}-${validade.year}",
         "diaVencimento": diaVencimento,
         "melhorDiaParaCompra": melhorDiaParaCompra,
         "vencimentoDiaUtil": vencimentoDiaUtil,
