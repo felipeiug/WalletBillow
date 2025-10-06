@@ -40,7 +40,7 @@ class _HomeState extends State<Home> {
   late GraficConfig configuracoesGrafico;
 
   //Configuracoes do home
-  late HomeUtil config;
+  HomeUtil? config;
 
   // Animação finalizada
   bool animateFinish = false;
@@ -50,18 +50,19 @@ class _HomeState extends State<Home> {
 
   Future<bool> startData() async {
     await Config.init(context);
-
     CreditCardDB creditCards = await CreditCardDB.init();
     Gastos gastos = await Gastos.init();
-    config = HomeUtil(gastos, creditCards);
-    await config.getPayments();
+    if (config == null) {
+      config = HomeUtil(gastos, creditCards);
+      await config!.getPayments();
+    }
 
     return true;
   }
 
   void openOptions() async {
     await Navigator.of(context).pushNamed("/configuracoes");
-    await config.getPayments();
+    await config?.getPayments();
     setState(() {});
   }
 
@@ -185,7 +186,7 @@ class _HomeState extends State<Home> {
     return FutureBuilder<bool>(
       future: startData(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+        if (!snapshot.hasData || config == null) {
           return const Center(
             child: SizedBox(
               width: 40,
@@ -274,7 +275,7 @@ class _HomeState extends State<Home> {
                           onPressed: () {
                             changeDispesa(
                               context,
-                              config,
+                              config!,
                               receita: true,
                               onValue: () => setState(() {}),
                             );
@@ -301,7 +302,7 @@ class _HomeState extends State<Home> {
                           onPressed: () {
                             changeDispesa(
                               context,
-                              config,
+                              config!,
                               onValue: () => setState(() {}),
                             );
                           },
@@ -326,7 +327,7 @@ class _HomeState extends State<Home> {
                           onPressed: () async {
                             await Navigator.push<CreditCard>(
                               context,
-                              MaterialPageRoute(builder: (context) => CreditCardScreen(config)),
+                              MaterialPageRoute(builder: (context) => CreditCardScreen(config!)),
                             );
                             setState(() {});
                           },
@@ -343,7 +344,7 @@ class _HomeState extends State<Home> {
             //Coluna com os dados
             body: Builder(
               builder: (context) {
-                int lenDespesas = config.despesas.length;
+                int lenDespesas = config!.despesas.length;
 
                 return Container(
                   padding: const EdgeInsets.all(0),
@@ -373,7 +374,7 @@ class _HomeState extends State<Home> {
                           child: Column(
                             children: [
                               //Gráfico
-                              if (!showGrafico) const Spacer() else if (animateFinish) grafico(config) else const Spacer(),
+                              if (!showGrafico) const Spacer() else if (animateFinish) grafico(config!) else const Spacer(),
 
                               // Valor e botão de abrir
                               Row(
@@ -382,7 +383,7 @@ class _HomeState extends State<Home> {
                                   const Spacer(),
 
                                   //Dados do total
-                                  (config.receitaDespesa) > 0
+                                  (config!.receitaDespesa) > 0
                                       ? const Icon(
                                           Icons.arrow_upward_rounded,
                                           color: Cores.bom,
@@ -395,7 +396,7 @@ class _HomeState extends State<Home> {
                                         ),
 
                                   //Lancamento total
-                                  Text("R\$ ${config.receitaDespesa.toStringAsFixed(2).replaceAll(".", ",")}"),
+                                  Text("R\$ ${config!.receitaDespesa.toStringAsFixed(2).replaceAll(".", ",")}"),
 
                                   //Espaçador
                                   const SizedBox(width: 15),
@@ -437,7 +438,7 @@ class _HomeState extends State<Home> {
                           //Voltar data
                           IconButton(
                             onPressed: () {
-                              config.lastMonth().then((value) => setState(() {}));
+                              config!.lastMonth().then((value) => setState(() {}));
                             },
                             icon: const Icon(Icons.navigate_before),
                           ),
@@ -448,7 +449,7 @@ class _HomeState extends State<Home> {
                           //Título do mês
                           Builder(
                             builder: (context) {
-                              DateTimeRange intervaloDeDatas = config.dateTimeRange;
+                              DateTimeRange intervaloDeDatas = config!.dateTimeRange;
 
                               // DataString
                               String formatedString = DateFormat("dd/MMM/yy", 'pt-BR').format(intervaloDeDatas.start);
@@ -462,14 +463,14 @@ class _HomeState extends State<Home> {
                                   onTapInside: (event) async {
                                     final DateTime? selected = await showMonthYearPicker(
                                       context: context,
-                                      initialDate: config.data,
+                                      initialDate: config!.data,
                                       firstDate: DateTime(1),
                                       lastDate: DateTime(3999),
                                       locale: const Locale.fromSubtags(languageCode: "pt", countryCode: "BR"),
                                     );
 
                                     if (selected != null) {
-                                      config.setData(DateTime(selected.year, selected.month, Config.diaPagamento)).then((value) {
+                                      config!.setData(DateTime(selected.year, selected.month, Config.diaPagamento)).then((value) {
                                         setState(() {});
                                       });
                                     }
@@ -485,7 +486,7 @@ class _HomeState extends State<Home> {
                           //Avançar as datas
                           IconButton(
                             onPressed: () {
-                              config.nextMonth().then((value) => setState(() {}));
+                              config!.nextMonth().then((value) => setState(() {}));
                             },
                             icon: const Icon(Icons.navigate_next),
                           ),
@@ -516,22 +517,22 @@ class _HomeState extends State<Home> {
                                 index -= 1;
                               }
 
-                              if (index == config.receitas.length) {
+                              if (index == config!.receitas.length) {
                                 return const Divider();
-                              } else if (index == config.receitas.length + 1) {
+                              } else if (index == config!.receitas.length + 1) {
                                 return const Text("Despesas");
-                              } else if (index > config.receitas.length) {
-                                index = index - config.receitas.length - 2;
+                              } else if (index > config!.receitas.length) {
+                                index = index - config!.receitas.length - 2;
                                 ePagamento = true;
                               }
 
-                              Lancamento despesa = (ePagamento ? config.gastos : config.receitas)[index];
+                              Lancamento despesa = (ePagamento ? config!.gastos : config!.receitas)[index];
 
                               return InkWell(
                                 onTap: () {
                                   changeDispesa(
                                     context,
-                                    config,
+                                    config!,
                                     despesa: despesa,
                                     onValue: () => setState(() {}),
                                   );
@@ -551,7 +552,7 @@ class _HomeState extends State<Home> {
                                             color: despesa.pago ? Cores.bom : null,
                                           ),
                                           onTap: () async {
-                                            config
+                                            config!
                                                 .editDespesa(
                                                   id: despesa.id,
                                                   parcela: despesa.parcelaAtual,
@@ -687,7 +688,7 @@ class _HomeState extends State<Home> {
                                               }
 
                                               if (all != null) {
-                                                await config.removeDespesa(
+                                                await config!.removeDespesa(
                                                   id: despesa.id,
                                                   parcela: despesa.parcelaAtual,
                                                   removeAll: all,
