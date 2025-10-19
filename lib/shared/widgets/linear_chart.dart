@@ -16,6 +16,21 @@ Widget grafico(HomeUtil config) {
     LineChartData(
       lineTouchData: const LineTouchData(enabled: false),
       lineBarsData: [
+        // Linha do 0
+        LineChartBarData(
+          spots: spots[3],
+          color: const Color.fromARGB(0, 255, 255, 255),
+          dotData: FlDotData(
+            show: true,
+            getDotPainter: (spot, a, b, c) {
+              return FlDotCrossPainter(
+                color: const Color.fromARGB(255, 255, 255, 255),
+                size: 5,
+                width: 1,
+              );
+            },
+          ),
+        ),
         // Receitas
         LineChartBarData(
           spots: spots[0],
@@ -31,14 +46,14 @@ Widget grafico(HomeUtil config) {
         // Diferença
         LineChartBarData(
           spots: spots[2],
-          color: Cores.primaria,
+          color: Cores.terciaria,
           dotData: const FlDotData(show: false),
         ),
       ],
       titlesData: FlTitlesData(
         rightTitles: const AxisTitles(
           axisNameSize: 5,
-          axisNameWidget: const SizedBox(),
+          axisNameWidget: SizedBox(),
         ),
         topTitles: const AxisTitles(axisNameWidget: Text("Balanço Mensal"), axisNameSize: 26),
         bottomTitles: AxisTitles(

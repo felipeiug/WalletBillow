@@ -337,6 +337,7 @@ class HomeUtil {
       [], //Receitas
       [], //Gastos
       [], //Diferença
+      [], //Zero
     ];
     DateTimeRange intervaloDatas = dateTimeRange;
     int dia = 0;
@@ -366,6 +367,7 @@ class HomeUtil {
       spots[0].add(FlSpot(dataUs, valReceita));
       spots[1].add(FlSpot(dataUs, valGasto));
       spots[2].add(FlSpot(dataUs, valReceita + valGasto));
+      spots[3].add(FlSpot(dataUs, 0));
     }
     return spots;
   }
